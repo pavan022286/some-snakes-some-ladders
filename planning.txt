@@ -4,5 +4,10 @@ Team Members: Prashanta Kandel 400521817, Pavan Patel 400530973, Atharva Kulkarn
 GitHub IDs: PrashantaKandel, pavanmcmaster, ZuningWang, atharva6905
 
 C GUI App
-Ideas: Chess, Tetris
+Ideas: Snakes and Latters
+
+Simulate the Snakes and Latters board game.
+Multiple players roll a dice and move the number of squares they roll
+Ladders move you closer to the top, and Snakes bring you further away
+First one to reach 100 wins!
 
