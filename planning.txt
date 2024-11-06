@@ -1,7 +1,7 @@
 Planing Document
 URl: https://github.com/Sam-Scott-McMaster/the-team-assignment-team-31-the-syntaxsquad.git
-Team Members: Prashanta Kandel 400521817, Pavan Patel 400530973, Atharva Kulkarni 400533314, Zuning Wang 400499491
-GitHub IDs: PrashantaKandel, pavanmcmaster, ZuningWang, atharva6905
+Team Members: Prashanta Kandel 400521817, Harold Le 400502557, Pavan Patel 400530973, Atharva Kulkarni 400533314, Zuning Wang 400499491
+GitHub IDs: PrashantaKandel, haroldle1, pavanmcmaster, ZuningWang, atharva6905
 
 C GUI App
 Ideas: Snakes and Latters
