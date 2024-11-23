@@ -1,0 +1,42 @@
+name: Some Snakes Some Ladders
+  
+on:
+    push:
+        branches: [ "main" ] 
+
+jobs:
+
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: build snakesNladders
+              run: gcc `pkg-config --cflags gtk4` -o snakesNladders generate_board.c `pkg-config --libs gtk4`
+
+            - name: upload binary
+              uses: actions/upload-artifact@v4
+              with:
+                name: Some Snakes Some Ladders
+                path: ./snakesNladders
+
+
+    test: # a test job
+        runs-on: ubuntu-latest # using ubuntu
+        steps:
+        - uses: actions/checkout@v4 # check out the repo
+
+        - name: Run Tests # subtask name
+          run: make snakesNladders; ./test_script >test_results.txt; # test command
+
+        - name: Upload Test Results # subtask name
+          if: ${{ always() }}  
+        
+          #do this even if the previous
+          #subtask returned a fail code
+
+          uses: actions/upload-artifact@v4 # this is an upload task
+          with:
+            name: Test Results # artifact name
+            path: ./test_results.txt
+        
