@@ -1,42 +1,50 @@
 name: Some Snakes Some Ladders
-  
+
 on:
-    push:
-        branches: [ "main" ] 
+  push:
+    branches:
+      - main
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libgtk-4-dev pkg-config build-essential
 
-            - name: build snakesNladders
-              run: gcc `pkg-config --cflags gtk4` -o snakesNladders generate_board.c `pkg-config --libs gtk4`
+      - name: Build snakesNladders
+        run: gcc `pkg-config --cflags gtk4` -o snakesNladders generate_board.c `pkg-config --libs gtk4`
 
-            - name: upload binary
-              uses: actions/upload-artifact@v4
-              with:
-                name: Some Snakes Some Ladders
-                path: ./snakesNladders
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: Some Snakes Some Ladders
+          path: ./snakesNladders
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    test: # a test job
-        runs-on: ubuntu-latest # using ubuntu
-        steps:
-        - uses: actions/checkout@v4 # check out the repo
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libgtk-4-dev pkg-config build-essential
 
-        - name: Run Tests # subtask name
-          run: make snakesNladders; ./test_script >test_results.txt; # test command
+      - name: Build and run tests
+        run: |
+          gcc `pkg-config --cflags gtk4` -o snakesNladders generate_board.c `pkg-config --libs gtk4`
+          ./snakesNladders > test_results.txt
 
-        - name: Upload Test Results # subtask name
-          if: ${{ always() }}  
-        
-          #do this even if the previous
-          #subtask returned a fail code
-
-          uses: actions/upload-artifact@v4 # this is an upload task
-          with:
-            name: Test Results # artifact name
-            path: ./test_results.txt
-        
+      - name: Upload Test Results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test Results
+          path: ./test_results.txt
