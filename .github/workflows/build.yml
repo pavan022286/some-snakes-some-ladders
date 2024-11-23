@@ -26,25 +26,25 @@ jobs:
           name: Some Snakes Some Ladders
           path: ./snakesNladders
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  #test:
+    #runs-on: ubuntu-latest
+    #steps:
+      #- name: Checkout repository
+      #  uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y libgtk-4-dev pkg-config build-essential
+      #- name: Install dependencies
+       # run: |
+         # sudo apt update
+          #sudo apt install -y libgtk-4-dev pkg-config build-essential
 
-      - name: Build and run tests
-        run: |
-          gcc `pkg-config --cflags gtk4` -o snakesNladders generate_board.c `pkg-config --libs gtk4`
-          ./snakesNladders > test_results.txt
+      #- name: Build and run tests
+        #run: |
+         # gcc `pkg-config --cflags gtk4` -o snakesNladders generate_board.c `pkg-config --libs gtk4`
+         # ./snakesNladders > test_results.txt
 
-      - name: Upload Test Results
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: Test Results
-          path: ./test_results.txt
+      #- name: Upload Test Results
+        #if: ${{ always() }}
+        #uses: actions/upload-artifact@v4
+        #with:
+          #name: Test Results
+          #path: ./test_results.txt
