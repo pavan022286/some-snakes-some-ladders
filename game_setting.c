@@ -57,6 +57,7 @@ static void on_player_count_changed(GtkComboBoxText *widget, gpointer data) {
 // Launch the settings window
 void launch_game_settings(GtkApplication *app, gpointer user_data) {
     GameState *game_state = (GameState *)user_data;
+    game_state->app = app;
 
     g_print("Debug: launch_game_settings called.\n");
 

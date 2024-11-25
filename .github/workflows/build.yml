@@ -19,7 +19,7 @@ jobs:
 
       - name: Build snakeLadders
         run: |
-          gcc `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c `pkg-config --libs gtk4`
+          gcc `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
           chmod +x snakeLadders
 
       - name: Debug Build Issues (if any)
