@@ -17,14 +17,23 @@ jobs:
           sudo apt update
           sudo apt install -y libgtk-4-dev pkg-config build-essential
 
-      - name: Build snakesNladders
-        run: gcc `pkg-config --cflags gtk4` -o snakesNladders generate_board.c `pkg-config --libs gtk4`
+      - name: Build snakeLadders
+        run: |
+          gcc `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c `pkg-config --libs gtk4`
+          chmod +x snakeLadders
+
+      - name: Debug Build Issues (if any)
+        if: failure()
+        run: |
+          echo "Build failed. Debugging logs:"
+          cat /var/log/syslog | tail -n 50
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
           name: Some Snakes Some Ladders
-          path: ./snakesNladders
+          path: ./snakeLadders
+
 
   #test:
     #runs-on: ubuntu-latest
