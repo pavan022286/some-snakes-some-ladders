@@ -1,9 +1,31 @@
 #include <gtk/gtk.h>
 #include "game.h"
+#include <string.h>
+#include <stdlib.h>
 
-int main(int argc, char **argv) {
+void help();
+
+int main(int argc, char **argv)
+{
     GtkApplication *app;
     int status;
+
+    // HELP FLAG
+    if (argc > 1)
+    {
+        // there is an argument
+        if (strcmp(argv[1], "--help") == 0)
+        {
+            // if --help flag is used
+            help();
+            return EXIT_SUCCESS;
+        }
+        else
+        {
+            // wrong option used
+            return EXIT_FAILURE;
+        }
+    }
 
     GameState game_state = {0};
 
@@ -21,4 +43,17 @@ int main(int argc, char **argv) {
     g_print("Debug: GtkApplication unref completed.\n");
 
     return status;
+}
+
+void help()
+{
+    puts("Usage: snakesLadders");
+    puts("Program creates GUI using GTK4");
+    puts("Select number of players and the colour for each player");
+    puts("Click play, press the button to role the dice");
+    puts("First player to reach tile 100 wins, Good Luck!");
+    puts("Options:");
+    puts("  --help            Display this help message and exit");
+    puts("Examples:");
+    puts("  snakesLadders --help");
 }
