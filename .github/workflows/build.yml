@@ -15,45 +15,48 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libgtk-4-dev pkg-config build-essential
+          sudo apt install -y libgtk-4-dev pkg-config build-essential gcc g++ lcov
 
-      - name: Build snakeLadders
+      - name: Build with Coverage
         run: |
-          gcc `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
+          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
           chmod +x snakeLadders
 
-      - name: Debug Build Issues (if any)
-        if: failure()
-        run: |
-          echo "Build failed. Debugging logs:"
-          cat /var/log/syslog | tail -n 50
-
-      - name: Upload binary
+      - name: Upload Binary
         uses: actions/upload-artifact@v4
         with:
           name: Some Snakes Some Ladders
           path: ./snakeLadders
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #test:
-    #runs-on: ubuntu-latest
-    #steps:
-      #- name: Checkout repository
-      #  uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libgtk-4-dev pkg-config build-essential gcc g++ lcov
 
-      #- name: Install dependencies
-       # run: |
-         # sudo apt update
-          #sudo apt install -y libgtk-4-dev pkg-config build-essential
+      - name: Build with Coverage
+        run: |
+          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
+          chmod +x snakeLadders
 
-      #- name: Build and run tests
-        #run: |
-         # gcc `pkg-config --cflags gtk4` -o snakesNladders generate_board.c `pkg-config --libs gtk4`
-         # ./snakesNladders > test_results.txt
+      - name: Set Test Script Executable
+        run: chmod +x ./test_script
+        
+      - name: Run Tests
+        run: |
+          ./test_script # test cases
 
-      #- name: Upload Test Results
-        #if: ${{ always() }}
-        #uses: actions/upload-artifact@v4
-        #with:
-          #name: Test Results
-          #path: ./test_results.txt
+      - name: Generate Coverage Report
+        run: |
+          gcov main.c game_setting.c generate_board.c drawSnakesAndLadders.c
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Coverage Report
+          path: ./*.gcov

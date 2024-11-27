@@ -54,6 +54,27 @@ static void on_player_count_changed(GtkComboBoxText *widget, gpointer data) {
     }
 }
 
+// Callback for help button
+static void on_help_button_clicked(GtkWidget *widget, gpointer data) {
+    g_print("Debug: on_help_button_clicked called.\n");
+
+    puts("Usage: snakesLadders");
+    puts("Program creates GUI using GTK4");
+    puts("Select number of players and the colour for each player");
+    puts("Click play, press the button to role the dice");
+    puts("First player to reach tile 100 wins, Good Luck!");
+    puts("Options:");
+    puts("  --help            Display this help message and exit");
+    puts("Examples:");
+    puts("  snakesLadders --help");
+}
+
+// // Callback for exit button
+// static void on_exit_button_clicked(GtkWidget *widget, gpointer data) {
+//     g_print("Debug: on_exit_button_clicked called.\n");
+//     gtk_window_destroy(window);
+// }
+
 // Launch the settings window
 void launch_game_settings(GtkApplication *app, gpointer user_data) {
     GameState *game_state = (GameState *)user_data;
@@ -103,6 +124,16 @@ void launch_game_settings(GtkApplication *app, gpointer user_data) {
     GtkWidget *button = gtk_button_new_with_label("Start Game");
     g_signal_connect(button, "clicked", G_CALLBACK(on_settings_confirmed), game_state);
     gtk_grid_attach(GTK_GRID(grid), button, 0, MAX_PLAYERS + 1, 2, 1);
+
+    // Create and add the help button
+    GtkWidget *help_button = gtk_button_new_with_label("Help");
+    g_signal_connect(help_button, "clicked", G_CALLBACK(on_help_button_clicked), NULL);
+    gtk_grid_attach(GTK_GRID(grid), help_button, 0, MAX_PLAYERS + 2, 2, 1);
+
+    // // Create and add the exit button
+    // GtkWidget *exit_button = gtk_button_new_with_label("Exit");
+    // g_signal_connect(exit_button, "clicked", G_CALLBACK(on_exit_button_clicked), NULL);
+    // gtk_grid_attach(GTK_GRID(grid), exit_button, 2, 0, 1, 1);
 
     gtk_window_set_child(GTK_WINDOW(window), grid);
     gtk_widget_show(window);
