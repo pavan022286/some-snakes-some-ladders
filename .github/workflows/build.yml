@@ -39,10 +39,10 @@ jobs:
         with:
           name: testGame Binary
 
-      - name: Install dependencies
+      - name: Install GTK-4 Libraries
         run: |
           sudo apt update
-          sudo apt install -y lcov xvfb
+          sudo apt install -y libgtk-4-dev xvfb lcov
 
       - name: Set Executable Permission for testGame
         run: chmod +x ./testGame
@@ -55,10 +55,10 @@ jobs:
 
       - name: Generate Coverage Reports
         run: |
-          gcov testGame-main.c > main_coverage.txt
-          gcov testGame-game_setting.c > game_setting_coverage.txt
-          gcov testGame-generate_board.c > generate_board_coverage.txt
-          gcov testGame-drawSnakesAndLadders.c > drawSnakesAndLadders_coverage.txt
+          gcov main.c > main_coverage.txt
+          gcov game_setting.c > game_setting_coverage.txt
+          gcov generate_board.c > generate_board_coverage.txt
+          gcov drawSnakesAndLadders.c > drawSnakesAndLadders_coverage.txt
 
       - name: Upload Coverage Reports
         uses: actions/upload-artifact@v4
