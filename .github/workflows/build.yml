@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,8 +22,34 @@ jobs:
           gcc --coverage `pkg-config --cflags gtk4` -o testGame main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
           chmod +x testGame
 
-      - name: Run testGame
-        run: ./testGame
+      - name: Upload testGame Binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: testGame Binary
+          path: ./testGame
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download testGame Binary
+        uses: actions/download-artifact@v4
+        with:
+          name: testGame Binary
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y lcov xvfb
+
+      - name: Run testGame with Virtual Display
+        run: |
+          Xvfb :99 -screen 0 1024x768x24 & # Start Xvfb in the background
+          export DISPLAY=:99               # Set the DISPLAY environment variable
+          ./testGame                       # Run the test application
 
       - name: Generate Coverage Reports
         run: |
