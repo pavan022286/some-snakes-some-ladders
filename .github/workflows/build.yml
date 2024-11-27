@@ -17,51 +17,46 @@ jobs:
           sudo apt update
           sudo apt install -y libgtk-4-dev pkg-config build-essential gcc g++ lcov
 
-      - name: Build testGame with Coverage
+      - name: Build with Coverage
         run: |
-          gcc --coverage `pkg-config --cflags gtk4` -o testGame main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
+          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
+          chmod +x snakeLadders
 
-      - name: Upload testGame Binary
+      - name: Upload Binary
         uses: actions/upload-artifact@v4
         with:
-          name: testGame Binary
-          path: ./testGame
+          name: Some Snakes Some Ladders
+          path: ./snakeLadders
 
   test:
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download testGame Binary
-        uses: actions/download-artifact@v4
-        with:
-          name: testGame Binary
-
-      - name: Install GTK-4 Libraries
+      - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libgtk-4-dev xvfb lcov
+          sudo apt install -y libgtk-4-dev pkg-config build-essential gcc g++ lcov
 
-      - name: Set Executable Permission for testGame
-        run: chmod +x ./testGame
-
-      - name: Run testGame with Virtual Display
+      - name: Build with Coverage
         run: |
-          Xvfb :99 -screen 0 1024x768x24 & # Start Xvfb in the background
-          export DISPLAY=:99               # Set the DISPLAY environment variable
-          ./testGame                       # Run the test application
+          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
+          chmod +x snakeLadders
 
-      - name: Generate Coverage Reports
+      - name: Set Test Script Executable
+        run: chmod +x ./test_script
+        
+      - name: Run Tests
         run: |
-          gcov main.c > main_coverage.txt
-          gcov game_setting.c > game_setting_coverage.txt
-          gcov generate_board.c > generate_board_coverage.txt
-          gcov drawSnakesAndLadders.c > drawSnakesAndLadders_coverage.txt
+          ./test_script # test cases
 
-      - name: Upload Coverage Reports
+      - name: Generate Coverage Report
+        run: |
+          gcov main.c game_setting.c generate_board.c drawSnakesAndLadders.c
+
+      - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
         with:
-          name: Coverage Reports
-          path: ./*_coverage.txt
+          name: Coverage Report
+          path: ./*.gcov
