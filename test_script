@@ -78,7 +78,7 @@ test() {
 
 # add test scripts
 
-
+./snakeLadders 
 
 # clean up
 rm test_err.txt test_out.txt
