@@ -15,25 +15,18 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libgtk-4-dev pkg-config build-essential
+          sudo apt install -y libgtk-4-dev pkg-config build-essential gcc g++ lcov
 
-      - name: Build snakeLadders
+      - name: Build with Coverage
         run: |
-          gcc `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
+          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
           chmod +x snakeLadders
 
-      - name: Debug Build Issues (if any)
-        if: failure()
-        run: |
-          echo "Build failed. Debugging logs:"
-          cat /var/log/syslog | tail -n 50
-
-      - name: Upload binary
+      - name: Upload Binary
         uses: actions/upload-artifact@v4
         with:
           name: Some Snakes Some Ladders
           path: ./snakeLadders
-
 
   test:
     runs-on: ubuntu-latest
@@ -44,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libgtk-4-dev pkg-config build-essential gcov
+          sudo apt install -y libgtk-4-dev pkg-config build-essential gcc g++ lcov
 
       - name: Build with Coverage
         run: |
@@ -53,7 +46,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          ./test_script.sh # Run your test cases here
+          ./test_script # test cases
 
       - name: Generate Coverage Report
         run: |
