@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -17,46 +17,23 @@ jobs:
           sudo apt update
           sudo apt install -y libgtk-4-dev pkg-config build-essential gcc g++ lcov
 
-      - name: Build with Coverage
+      - name: Build testGame with Coverage
         run: |
-          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
-          chmod +x snakeLadders
+          gcc --coverage `pkg-config --cflags gtk4` -o testGame main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
+          chmod +x testGame
 
-      - name: Upload Binary
+      - name: Run testGame
+        run: ./testGame
+
+      - name: Generate Coverage Reports
+        run: |
+          gcov testGame-main.c > main_coverage.txt
+          gcov testGame-game_setting.c > game_setting_coverage.txt
+          gcov testGame-generate_board.c > generate_board_coverage.txt
+          gcov testGame-drawSnakesAndLadders.c > drawSnakesAndLadders_coverage.txt
+
+      - name: Upload Coverage Reports
         uses: actions/upload-artifact@v4
         with:
-          name: Some Snakes Some Ladders
-          path: ./snakeLadders
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y libgtk-4-dev pkg-config build-essential gcc g++ lcov
-
-      - name: Build with Coverage
-        run: |
-          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
-          chmod +x snakeLadders
-
-      - name: Set Test Script Executable
-        run: chmod +x ./test_script
-        
-      - name: Run Tests
-        run: |
-          ./test_script # test cases
-
-      - name: Generate Coverage Report
-        run: |
-          gcov main.c game_setting.c generate_board.c drawSnakesAndLadders.c
-
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: Coverage Report
-          path: ./*.gcov
+          name: Coverage Reports
+          path: ./*_coverage.txt
