@@ -2,6 +2,8 @@
 #include "game.h"
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
 
 // Helper to get pawn SVG path based on color
 const char *get_pawn_svg(const char *color) {
@@ -84,6 +86,38 @@ static void on_tile_button_clicked(GtkButton *button, gpointer user_data) {
         g_print("Ladder! Go to tile %d\n", tile->ladder_to);
     }
 }
+//dice roll segment, function to roll the dice
+static int roll_dice() {
+    return (rand() % 6) + 1;
+}
+
+//function to move a player
+static void move_player(GameState *game_state, int player_index) {
+    Player *player = &game_state->players[player_index];
+    int dice_result = roll_dice();
+    g_print("Player %d rolled a %d\n", player_index + 1, dice_result); //prints roll result
+
+    int new_position = player->position + dice_result;
+    if (new_position > 100) {
+        g_print("Player %d cannot move, dice roll exceeds 100.\n", player_index + 1); //makes sure roll is not more than 100
+        return;
+    }
+
+    player->position = new_position;
+    g_print("Player %d moved to tile %d\n", player_index + 1, player->position); //displays new position
+}
+
+// callback for the dice roll button
+static void on_dice_roll_clicked(GtkButton *button, gpointer user_data) {
+    GameState *game_state = (GameState *)user_data;
+
+    static int current_player = 0;
+    move_player(game_state, current_player);
+
+    //moves to the next player
+    current_player = (current_player + 1) % game_state->num_players;
+    g_print("Next turn: Player %d\n", current_player + 1);
+}
 
 // Launch the game board window
 void launch_game_board(GameState *game_state) {
@@ -162,6 +196,11 @@ void launch_game_board(GameState *game_state) {
     } else {
         g_print("Error: Failed to load SVG for Player 1.\n");
     }
+
+    //dice roll buttion
+    GtkWidget *dice_button = gtk_button_new_with_label("Roll Dice");
+    g_signal_connect(dice_button, "clicked", G_CALLBACK(on_dice_roll_clicked), game_state);
+    gtk_grid_attach(GTK_GRID(grid), dice_button, 0, BOARD_SIZE, BOARD_SIZE, 1);
 
     gtk_widget_show(window);
     g_print("Debug: Game board displayed.\n");

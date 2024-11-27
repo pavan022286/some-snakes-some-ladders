@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include "game.h"
 #include <string.h>
-#include <stdlib.h>
+#include <stdio.h>
 
 void help();
 
@@ -41,6 +41,8 @@ int main(int argc, char **argv)
 
     g_object_unref(app);
     g_print("Debug: GtkApplication unref completed.\n");
+
+    srand(time(NULL)); //seeds rng (makes sure result is truly random)
 
     return status;
 }
