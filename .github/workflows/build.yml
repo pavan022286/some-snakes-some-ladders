@@ -44,6 +44,9 @@ jobs:
           gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
           chmod +x snakeLadders
 
+      - name: Set Test Script Executable
+        run: chmod +x ./test_script
+        
       - name: Run Tests
         run: |
           ./test_script # test cases
