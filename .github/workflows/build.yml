@@ -44,22 +44,23 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y libgtk-4-dev pkg-config build-essential xvfb
+          sudo apt install -y libgtk-4-dev pkg-config build-essential gcov
 
-          # we need to download the dependinces to be able to run the GUI to test
-      - name: Start Xvfb
+      - name: Build with Coverage
         run: |
-          Xvfb :99 -screen 0 1920x1080x24 &
-          export DISPLAY=:99
+          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
+          chmod +x snakeLadders
 
-      - name: Run GUI Application
+      - name: Run Tests
         run: |
-          ./snakeLadders &
-          sleep 5
-          echo "GUI Test Completed" # Modify as needed to test functionality
+          ./test_script.sh # Run your test cases here
 
-      - name: Capture Logs
-        if: failure()
+      - name: Generate Coverage Report
         run: |
-          echo "Test failed. Debugging logs:"
-          cat /var/log/syslog | tail -n 50
+          gcov main.c game_setting.c generate_board.c drawSnakesAndLadders.c
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: Coverage Report
+          path: ./*.gcov
