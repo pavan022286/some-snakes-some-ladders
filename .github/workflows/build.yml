@@ -20,7 +20,6 @@ jobs:
       - name: Build testGame with Coverage
         run: |
           gcc --coverage `pkg-config --cflags gtk4` -o testGame main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
-          chmod +x testGame
 
       - name: Upload testGame Binary
         uses: actions/upload-artifact@v4
@@ -44,6 +43,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y lcov xvfb
+
+      - name: Set Executable Permission for testGame
+        run: chmod +x ./testGame
 
       - name: Run testGame with Virtual Display
         run: |
