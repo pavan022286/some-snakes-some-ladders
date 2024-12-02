@@ -1,3 +1,10 @@
+/* name, stdudent number, 2024-12-05
+ *
+ * C Script that creates the main menue
+ * screen for Snakes and Ladders. It includes
+ * Player selction and the help button
+ * This leads to the board creation
+ */
 #include <gtk/gtk.h>
 #include "game.h"
 #include <string.h>
@@ -6,22 +13,35 @@ static GtkComboBoxText *color_combos[MAX_PLAYERS];
 static GtkWidget *color_labels[MAX_PLAYERS];
 
 // Callback for "Start Game" button
-static void on_settings_confirmed(GtkWidget *widget, gpointer data) {
+
+/* method_name
+ *
+ * Parameters: Tiles board[][] is a 2D array of size 10
+ * Side Effect:
+ * Description:
+ * Return:
+ */
+static void on_settings_confirmed(GtkWidget *widget, gpointer data)
+{
     GameState *game_state = (GameState *)data;
 
     g_print("Debug: on_settings_confirmed called.\n");
 
-    for (int i = 0; i < game_state->num_players; i++) {
+    for (int i = 0; i < game_state->num_players; i++)
+    {
         const char *color = gtk_combo_box_text_get_active_text(color_combos[i]);
         g_print("Debug: Player %d selected color: %s\n", i + 1, color);
 
-        if (!color) {
+        if (!color)
+        {
             g_print("Player %d must select a color.\n", i + 1);
             return;
         }
 
-        for (int j = 0; j < i; j++) {
-            if (strcmp(color, game_state->players[j].color) == 0) {
+        for (int j = 0; j < i; j++)
+        {
+            if (strcmp(color, game_state->players[j].color) == 0)
+            {
                 g_print("Players cannot choose the same color.\n");
                 return;
             }
@@ -38,24 +58,44 @@ static void on_settings_confirmed(GtkWidget *widget, gpointer data) {
 }
 
 // Callback for player count change
-static void on_player_count_changed(GtkComboBoxText *widget, gpointer data) {
+
+/* method_name
+ *
+ * Parameters: Tiles board[][] is a 2D array of size 10
+ * Side Effect:
+ * Description:
+ * Return:
+ */
+static void on_player_count_changed(GtkComboBoxText *widget, gpointer data)
+{
     GameState *game_state = (GameState *)data;
     g_print("Debug: on_player_count_changed called.\n");
 
     const char *num_players_text = gtk_combo_box_text_get_active_text(widget);
-    if (!num_players_text) return;
+    if (!num_players_text)
+        return;
 
     game_state->num_players = atoi(num_players_text);
     g_print("Debug: Number of players selected: %d\n", game_state->num_players);
 
-    for (int i = 0; i < MAX_PLAYERS; i++) {
+    for (int i = 0; i < MAX_PLAYERS; i++)
+    {
         gtk_widget_set_visible(color_labels[i], i < game_state->num_players);
         gtk_widget_set_visible(GTK_WIDGET(color_combos[i]), i < game_state->num_players);
     }
 }
 
 // Callback for help button
-static void on_help_button_clicked(GtkWidget *widget, gpointer data) {
+
+/* method_name
+ *
+ * Parameters: Tiles board[][] is a 2D array of size 10
+ * Side Effect:
+ * Description:
+ * Return:
+ */
+static void on_help_button_clicked(GtkWidget *widget, gpointer data)
+{
     g_print("Debug: on_help_button_clicked called.\n");
 
     puts("Usage: snakesLadders");
@@ -76,7 +116,16 @@ static void on_help_button_clicked(GtkWidget *widget, gpointer data) {
 // }
 
 // Launch the settings window
-void launch_game_settings(GtkApplication *app, gpointer user_data) {
+
+/* method_name
+ *
+ * Parameters: Tiles board[][] is a 2D array of size 10
+ * Side Effect:
+ * Description:
+ * Return:
+ */
+void launch_game_settings(GtkApplication *app, gpointer user_data)
+{
     GameState *game_state = (GameState *)user_data;
     game_state->app = app;
 
@@ -103,7 +152,8 @@ void launch_game_settings(GtkApplication *app, gpointer user_data) {
     g_signal_connect(combo_box, "changed", G_CALLBACK(on_player_count_changed), game_state);
     gtk_grid_attach(GTK_GRID(grid), combo_box, 1, 0, 1, 1);
 
-    for (int i = 0; i < MAX_PLAYERS; i++) {
+    for (int i = 0; i < MAX_PLAYERS; i++)
+    {
         GtkWidget *color_label = gtk_label_new(g_strdup_printf("Player %d Color:", i + 1));
         gtk_grid_attach(GTK_GRID(grid), color_label, 0, i + 1, 1, 1);
 
