@@ -1,4 +1,4 @@
-/* Name, student number, 2024-12-05
+/* Zuning Wang, 400499491, 2024-12-05
  *
  * C Script that darws the snakes
  * and ladders using cairo for
@@ -10,49 +10,48 @@
 #include <string.h>
 #include <math.h>
 
-/* method_name
+/* draw_snake() method
  *
- * Parameters: Tiles board[][] is a 2D array of size 10
- * Side Effect:
- * Description:
- * Return:
+ * Parameters:  x y coordinates of start and end points
+ * Description: draw snakes when called
  */
 void draw_snake(cairo_t *cr, double start_x, double start_y, double end_x, double end_y)
 {
     // using three curves for snake
-    const int num_segments = 3;
+    const int numCurves = 3;
     double start_width = 12.0;
     double end_width = 0.5;
 
     // calculate overall direction
-    double angle = atan2(end_y - start_y, end_x - start_x);
+    double angle = atan2(end_y - start_y, end_x - start_x); //angle between x axis and end point
     double distance = sqrt(pow(end_x - start_x, 2) + pow(end_y - start_y, 2));
     double wave_amplitude = distance * 0.15;
 
     // draw body of snake
-    cairo_set_source_rgb(cr, 0.8, 0.2, 0.2); // set to red
+    cairo_set_source_rgb(cr, 0.9, 0.2, 0.2); // set to red
     cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
     cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
 
     cairo_move_to(cr, start_x, start_y);
 
-    for (int i = 0; i < num_segments; i++)
+    for (int i = 0; i < numCurves; i++)
     {
-        double t = (double)i / num_segments;
-        double next_t = (double)(i + 1) / num_segments;
+        double relativeLen = (double)i / numCurves; //relative position of the whole snake 
+        double next_relativeLen = (double)(i + 1) / numCurves;
 
-        double seg_start_x = start_x + t * (end_x - start_x);
-        double seg_start_y = start_y + t * (end_y - start_y);
-        double seg_end_x = start_x + next_t * (end_x - start_x);
-        double seg_end_y = start_y + next_t * (end_y - start_y);
+        //start and end points of each segment
+        double seg_start_x = start_x + relativeLen * (end_x - start_x);
+        double seg_start_y = start_y + relativeLen * (end_y - start_y);
+        double seg_end_x = start_x + next_relativeLen * (end_x - start_x);
+        double seg_end_y = start_y + next_relativeLen * (end_y - start_y);
 
-        double offset = (i % 2 == 0 ? 1 : -1) * wave_amplitude;
+        double offset = (i % 2 == 0 ? 1 : -1) * wave_amplitude; //alternate between curving to left or right
         double ctrl1_x = seg_start_x + (seg_end_x - seg_start_x) / 3 + offset * cos(angle + M_PI / 2);
         double ctrl1_y = seg_start_y + (seg_end_y - seg_start_y) / 3 + offset * sin(angle + M_PI / 2);
         double ctrl2_x = seg_start_x + 2 * (seg_end_x - seg_start_x) / 3 + offset * cos(angle + M_PI / 2);
         double ctrl2_y = seg_start_y + 2 * (seg_end_y - seg_start_y) / 3 + offset * sin(angle + M_PI / 2);
 
-        double progress = t * t;
+        double progress = relativeLen * relativeLen; //smooth joint
         double current_width = start_width + (end_width - start_width) * progress;
         cairo_set_line_width(cr, current_width);
 
@@ -73,14 +72,14 @@ void draw_snake(cairo_t *cr, double start_x, double start_y, double end_x, doubl
     // draw eyes
     cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_save(cr);
-    cairo_translate(cr, start_x - start_width / 3, start_y - start_width / 3);
+    cairo_translate(cr, start_x - start_width / 3, start_y - start_width / 3); //set position
     cairo_scale(cr, 4, 4);
     cairo_arc(cr, 0, 0, 1, 0, 2 * M_PI);
     cairo_fill(cr);
     cairo_restore(cr);
 
     cairo_save(cr);
-    cairo_translate(cr, start_x + start_width / 3, start_y - start_width / 3);
+    cairo_translate(cr, start_x + start_width / 3, start_y - start_width / 3);//set position
     cairo_scale(cr, 4, 4);
     cairo_arc(cr, 0, 0, 1, 0, 2 * M_PI);
     cairo_fill(cr);
@@ -89,26 +88,24 @@ void draw_snake(cairo_t *cr, double start_x, double start_y, double end_x, doubl
     // draw pupils
     cairo_set_source_rgb(cr, 0, 0, 0);
     cairo_save(cr);
-    cairo_translate(cr, start_x - start_width / 3, start_y - start_width / 3);
+    cairo_translate(cr, start_x - start_width / 3, start_y - start_width / 3);//set position
     cairo_scale(cr, 2, 2);
     cairo_arc(cr, 0, 0, 1, 0, 2 * M_PI);
     cairo_fill(cr);
     cairo_restore(cr);
 
     cairo_save(cr);
-    cairo_translate(cr, start_x + start_width / 3, start_y - start_width / 3);
+    cairo_translate(cr, start_x + start_width / 3, start_y - start_width / 3);//set position
     cairo_scale(cr, 2, 2);
     cairo_arc(cr, 0, 0, 1, 0, 2 * M_PI);
     cairo_fill(cr);
     cairo_restore(cr);
 }
 
-/* method_name
+/* draw_function method
  *
- * Parameters: Tiles board[][] is a 2D array of size 10
- * Side Effect:
- * Description:
- * Return:
+ * Parameters: drawing area, size of area and structure
+ * Description: It will draw snakes and ladders when being called
  */
 void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data)
 {
@@ -157,7 +154,7 @@ void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpo
                 else
                 {
                     // Draw ladder
-                    cairo_set_source_rgb(cr, 0.4, 0.6, 0.1);
+                    cairo_set_source_rgb(cr, 0.6, 0.3, 0.0);
                     cairo_set_line_width(cr, 3.0);
 
                     double angle = atan2(target_tile->y - current_tile->y,
