@@ -98,15 +98,17 @@ static void on_help_button_clicked(GtkWidget *widget, gpointer data)
 {
     g_print("Debug: on_help_button_clicked called.\n");
 
-    puts("Usage: snakesLadders");
-    puts("Program creates GUI using GTK4");
-    puts("Select number of players and the colour for each player");
-    puts("Click play, press the button to role the dice");
-    puts("First player to reach tile 100 wins, Good Luck!");
-    puts("Options:");
+    puts("Usage: snakesLadders [OPTIONS]");
+    puts("Launch the Snakes and Ladders game with a GUI built using GTK4.");
+    puts("\nOptions:");
     puts("  --help            Display this help message and exit");
-    puts("Examples:");
-    puts("  snakesLadders --help");
+    puts("\nControls:");
+    puts("  Use the mouse to select the number of players and assign colors.");
+    puts("  Click the 'Play' button to start the game.");
+    puts("  Press the dice button to roll the dice for your turn.");
+    puts("\nExamples:");
+    puts("  snakesLadders          Launch the game.");
+    puts("  snakesLadders --help   Show this help message.");
 }
 
 // // Callback for exit button

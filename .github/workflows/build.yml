@@ -39,23 +39,20 @@ jobs:
           sudo apt update
           sudo apt install -y libgtk-4-dev pkg-config build-essential gcc g++ lcov
 
-      - name: Build with Coverage
+      - name: Build Test Application
         run: |
-          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o snakeLadders main.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
-          chmod +x snakeLadders
+          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o testApp testApp.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
+          chmod +x testApp
 
-      - name: Set Test Script Executable
-        run: chmod +x ./test_script
-        
       - name: Run Tests
         run: |
-          ./test_script # test cases
+          ./testApp
 
       - name: Generate Coverage Report
         run: |
-          gcov main.c game_setting.c generate_board.c drawSnakesAndLadders.c
+          gcov testApp.c main.c game_setting.c generate_board.c drawSnakesAndLadders.c
 
-      - name: Upload Coverage Report
+      - name: Upload Coverage Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Coverage Report
