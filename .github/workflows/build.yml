@@ -47,7 +47,7 @@ jobs:
         run: |
           ./testGame > test_results.txt 2>&1 # Capture stdout and stderr
           ls -al # Check for coverage files
-          gcov testApp.c game_setting.c generate_board.c drawSnakesAndLadders.c # Generate coverage reports
+          gcov testGame-testApp.c; gcov testGame-game_setting.c; gcov testGame-generate_board.c; gcov testGame-drawSnakesAndLadders.c # Generate coverage reports
 
       - name: Upload Test Results
         if: ${{ always() }}
