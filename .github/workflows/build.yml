@@ -28,32 +28,36 @@ jobs:
           name: Some Snakes Some Ladders
           path: ./snakeLadders
 
-  test:
-    runs-on: ubuntu-latest
+  test: # a test job
+    runs-on: ubuntu-latest # using ubuntu
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4 # check out the repo
 
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y libgtk-4-dev pkg-config build-essential gcc g++ lcov
 
-      - name: Build Test Application
+      - name: Build with Coverage
         run: |
-          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o testApp testApp.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
-          chmod +x testApp
+          make testGame
 
-      - name: Run Tests
+      - name: Run Tests # subtask name
         run: |
-          ./testApp
+          ./testGame # run the test executable 
+          gcov testApp.c game_setting.c generate_board.c drawSnakesAndLadders.c # generate the gcov reports
 
-      - name: Generate Coverage Report
-        run: |
-          gcov testApp.c main.c game_setting.c generate_board.c drawSnakesAndLadders.c
-
-      - name: Upload Coverage Artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload Test Results # subtask name
+        if: ${{ always() }}  # do this even if the previous subtask returned a fail code
+        uses: actions/upload-artifact@v4 # this is an upload task
         with:
-          name: Coverage Report
-          path: ./*.gcov
+          name: Test Results # artifact name
+          path: ./test_results.txt # upload the test results
+
+      - name: Upload Coverage Reports # subtask name
+        if: ${{ always() }}  # do this even if the previous subtask returned a fail code
+        uses: actions/upload-artifact@v4 # this is an upload task
+        with:
+          name: Coverage Reports # artifact name
+          path: ./*.gcov # upload the gcov reports
+
