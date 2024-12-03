@@ -156,7 +156,7 @@ static int roll_dice() {
 static void move_player(GameState *game_state, int player_index) {
     Player *player = &game_state->players[player_index];
     int dice_result = roll_dice();
-    g_print("Player %d rolled a %d\n", player_index + 1, dice_result); // Prints roll result
+    g_print("Player %d rolled a %d\n", player_index + 1, dice_result);
 
     int new_position = player->position + dice_result;
 
@@ -166,45 +166,71 @@ static void move_player(GameState *game_state, int player_index) {
     }
 
     // Handle snakes and ladders
-    int row = (BOARD_SIZE - 1) - ((new_position - 1) / BOARD_SIZE);
-    int col = ((row % 2 == 0) ? ((new_position - 1) % BOARD_SIZE) : (BOARD_SIZE - 1 - (new_position - 1) % BOARD_SIZE));
+    Tile *tile = NULL;
+    while (1) {
+        int row = (BOARD_SIZE - 1) - ((new_position - 1) / BOARD_SIZE);
+        int col = ((BOARD_SIZE - 1 - row) % 2 == 0)
+                    ? (new_position - 1) % BOARD_SIZE // Even row: left-to-right
+                    : (BOARD_SIZE - 1) - ((new_position - 1) % BOARD_SIZE); // Odd row: right-to-left
 
-    Tile *tile = &game_state->board[row][col];
-    if (tile->snake_to > 0) {
-        g_print("Snake! Player %d goes from tile %d to tile %d\n", player_index + 1, new_position, tile->snake_to);
-        new_position = tile->snake_to;
-    } else if (tile->ladder_to > 0) {
-        g_print("Ladder! Player %d goes from tile %d to tile %d\n", player_index + 1, new_position, tile->ladder_to);
-        new_position = tile->ladder_to;
+        tile = &game_state->board[row][col];
+
+        // Debugging log for the new position
+        g_print("Player %d landed on tile %d (row: %d, col: %d)\n",
+                player_index + 1, new_position, row, col);
+
+        if (tile->snake_to > 0) {
+            g_print("Snake! Player %d moves from tile %d to tile %d\n",
+                    player_index + 1, new_position, tile->snake_to);
+            new_position = tile->snake_to;
+        } else if (tile->ladder_to > 0) {
+            g_print("Ladder! Player %d moves from tile %d to tile %d\n",
+                    player_index + 1, new_position, tile->ladder_to);
+            new_position = tile->ladder_to;
+        } else {
+            break; // No snake or ladder; stop
+        }
     }
 
-    // Update player's position after handling snakes/ladders
+    // Update player's position
     player->position = new_position;
 
     // Calculate final row and column
-    row = (BOARD_SIZE - 1) - ((new_position - 1) / BOARD_SIZE);
-    col = ((row % 2 == 0) ? ((new_position - 1) % BOARD_SIZE) : (BOARD_SIZE - 1 - (new_position - 1) % BOARD_SIZE));
+    int row = (BOARD_SIZE - 1) - ((new_position - 1) / BOARD_SIZE);
+    int col = ((BOARD_SIZE - 1 - row) % 2 == 0)
+                ? (new_position - 1) % BOARD_SIZE // Even row: left-to-right
+                : (BOARD_SIZE - 1) - ((new_position - 1) % BOARD_SIZE); // Odd row: right-to-left
 
     // Hide the old pawn (reuse the widget)
-    if (player->pawn_widget) {
+    if (player->pawn_widget && GTK_IS_WIDGET(player->pawn_widget)) {
         gtk_widget_hide(player->pawn_widget);
     }
 
-    // Attach the pawn to the new position
+    // Create a new pawn widget
     GtkWidget *new_pawn = gtk_image_new_from_file(get_pawn_svg(player->color));
     player->pawn_widget = new_pawn;
+
+    // Add pawn with offsets for stacking
+    int offset_x = (player_index % 2) * 10; // Horizontal offset
+    int offset_y = (player_index / 2) * 10; // Vertical offset
     gtk_grid_attach(GTK_GRID(game_state->grid), new_pawn, col, row, 1, 1);
-    gtk_widget_show(new_pawn);
+    gtk_widget_set_margin_start(new_pawn, offset_x);
+    gtk_widget_set_margin_top(new_pawn, offset_y);
+
+    // Ensure the pawn widget is visible
+    if (GTK_IS_WIDGET(new_pawn)) {
+        gtk_widget_show(new_pawn);
+    } else {
+        g_print("Error: Invalid pawn widget for Player %d.\n", player_index + 1);
+    }
 
     g_print("Player %d moved to tile %d (row: %d, col: %d).\n", player_index + 1, new_position, row, col);
 
-    // Ensure dice roll button remains visible
-    if (!gtk_widget_is_visible(game_state->dice_button)) {
+    // Ensure the dice roll button remains visible
+    if (GTK_IS_WIDGET(game_state->dice_button) && !gtk_widget_is_visible(game_state->dice_button)) {
         gtk_widget_show(game_state->dice_button);
-        g_print("Dice roll button restored.\n");
     }
 }
-
 
 // callback for the dice roll button
 /* method_name
