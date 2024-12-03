@@ -243,20 +243,31 @@ void on_activate(GtkApplication *app, gpointer user_data)
  */
 int main(int argc, char *argv[])
 {
-    gtk_init();
+    // Check if running in a headless environment
+    if (getenv("DISPLAY") == NULL)
+    {
+        g_print("Headless environment detected. Skipping GUI tests.\n");
+    }
+    else
+    {
+        g_print("Display detected. Running GUI tests.\n");
+        gtk_init();
 
-    g_print("Running test: test_launch_game_board\n");
-    test_launch_game_board(); // test 1
-    test_initialize_board();  // test 2
+        g_print("Running test: test_launch_game_board\n");
+        test_launch_game_board(); // test 1
+        test_initialize_board();  // test 2
 
-    // test 3
-    GtkApplication *app = gtk_application_new("com.example.snakesandladders", G_APPLICATION_FLAGS_NONE);
-    int status;
+        // Initialize application for GUI-related tests
+        GtkApplication *app = gtk_application_new("com.example.snakesandladders", G_APPLICATION_FLAGS_NONE);
+        int status;
 
-    g_signal_connect(app, "activate", G_CALLBACK(on_activate), NULL);
+        g_signal_connect(app, "activate", G_CALLBACK(on_activate), NULL);
+        status = g_application_run(G_APPLICATION(app), argc, argv);
+        g_object_unref(app);
+    }
 
-    status = g_application_run(G_APPLICATION(app), argc, argv);
-    g_object_unref(app);
+    // Add any non-GUI logic tests here
+    test_initialize_board(); // Test logic for initializing the board
 
     return 0;
 }

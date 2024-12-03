@@ -28,36 +28,36 @@ jobs:
           name: Some Snakes Some Ladders
           path: ./snakeLadders
 
-  test: # a test job
-    runs-on: ubuntu-latest # using ubuntu
+  test:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # check out the repo
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y libgtk-4-dev pkg-config build-essential gcc g++ lcov
 
-      - name: Build with Coverage
+      - name: Build Tests
         run: |
-          make testGame
+          gcc -fprofile-arcs -ftest-coverage `pkg-config --cflags gtk4` -o testGame testApp.c game_setting.c generate_board.c drawSnakesAndLadders.c `pkg-config --libs gtk4` -lm
+          chmod +x testGame
 
-      - name: Run Tests # subtask name
+      - name: Run Tests
         run: |
-          ./testGame # run the test executable 
-          gcov testApp.c game_setting.c generate_board.c drawSnakesAndLadders.c # generate the gcov reports
+          ./testGame # Run the test executable
+          gcov testApp.c game_setting.c generate_board.c drawSnakesAndLadders.c
 
-      - name: Upload Test Results # subtask name
-        if: ${{ always() }}  # do this even if the previous subtask returned a fail code
-        uses: actions/upload-artifact@v4 # this is an upload task
+      - name: Upload Test Results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
         with:
-          name: Test Results # artifact name
-          path: ./test_results.txt # upload the test results
+          name: Test Results
+          path: ./test_results.txt
 
-      - name: Upload Coverage Reports # subtask name
-        if: ${{ always() }}  # do this even if the previous subtask returned a fail code
-        uses: actions/upload-artifact@v4 # this is an upload task
+      - name: Upload Coverage Reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
         with:
-          name: Coverage Reports # artifact name
-          path: ./*.gcov # upload the gcov reports
-
+          name: Coverage Reports
+          path: ./*.gcov
