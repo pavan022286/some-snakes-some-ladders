@@ -1,4 +1,4 @@
-/* name, stdudent number, 2024-12-05
+/* Harold Le, 400502557, 2024-12-05
  *
  * C Script that creates the main menue
  * screen for Snakes and Ladders. It includes
@@ -13,14 +13,22 @@ static GtkComboBoxText *color_combos[MAX_PLAYERS];
 static GtkWidget *color_labels[MAX_PLAYERS];
 
 // Callback for "Start Game" button
-
-/* method_name
+// Harold Le, 400502557, 2024-12-05
+/* on_settings_confirmed
  *
- * Parameters: Tiles board[][] is a 2D array of size 10
- * Side Effect:
- * Description:
- * Return:
+ * Parameters: 
+ *   GtkWidget *widget - The "Start Game" button widget (unused).
+ *   gpointer data - Pointer to the GameState structure.
+ * Side Effect: 
+ *   - Updates player colors and initial positions based on user selection.
+ *   - Logs debug information about player color selection.
+ *   - Validates color uniqueness across players.
+ *   - Calls `launch_game_board` to proceed to the game board screen.
+ * Description: Processes player settings (e.g., color selection) and transitions 
+ *              to the game board after validation.
+ * Return: None.
  */
+
 static void on_settings_confirmed(GtkWidget *widget, gpointer data)
 {
     GameState *game_state = (GameState *)data;
@@ -58,13 +66,19 @@ static void on_settings_confirmed(GtkWidget *widget, gpointer data)
 }
 
 // Callback for player count change
-
-/* method_name
+// Harold Le, 400502557, 2024-12-05
+/* on_player_count_changed
  *
- * Parameters: Tiles board[][] is a 2D array of size 10
- * Side Effect:
- * Description:
- * Return:
+ * Parameters: 
+ *   GtkComboBoxText *widget - The combo box widget for selecting the number of players.
+ *   gpointer data - Pointer to the GameState structure.
+ * Side Effect: 
+ *   - Updates the `num_players` field in the GameState structure.
+ *   - Shows or hides player color selection widgets based on the number of players.
+ *   - Logs debug information about the player count selection.
+ * Description: Handles changes to the number of players, updating the GameState and 
+ *              adjusting the visibility of color selection widgets.
+ * Return: None.
  */
 static void on_player_count_changed(GtkComboBoxText *widget, gpointer data)
 {
@@ -86,7 +100,7 @@ static void on_player_count_changed(GtkComboBoxText *widget, gpointer data)
 }
 
 // Callback for help button
-
+// Harold Le, 400502557, 2024-12-05
 /* method_name
  *
  * Parameters: Tiles board[][] is a 2D array of size 10
@@ -111,21 +125,22 @@ static void on_help_button_clicked(GtkWidget *widget, gpointer data)
     puts("  snakesLadders --help   Show this help message.");
 }
 
-// // Callback for exit button
-// static void on_exit_button_clicked(GtkWidget *widget, gpointer data) {
-//     g_print("Debug: on_exit_button_clicked called.\n");
-//     gtk_window_destroy(window);
-// }
-
 // Launch the settings window
 
-/* method_name
+/* launch_game_settings
  *
- * Parameters: Tiles board[][] is a 2D array of size 10
- * Side Effect:
- * Description:
- * Return:
+ * Parameters: 
+ *   GtkApplication *app - The GTK application instance.
+ *   gpointer user_data - Pointer to the GameState structure.
+ * Side Effect: 
+ *   - Creates and displays a settings window with UI components for player count and color selection.
+ *   - Updates the GameState structure with the application instance.
+ *   - Connects signals for player count changes, help button, and start game functionality.
+ * Description: Initializes and displays the game settings screen, allowing users to select the number of players,
+ *              assign colors, and proceed to the game board.
+ * Return: None.
  */
+
 void launch_game_settings(GtkApplication *app, gpointer user_data)
 {
     GameState *game_state = (GameState *)user_data;
