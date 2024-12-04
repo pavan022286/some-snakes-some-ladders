@@ -167,12 +167,20 @@ static int roll_dice()
 }
 
 // function to move a player
+//Harold Le, 400502557, 2024-12-05
 /* move_player
  *
- * Parameters: Game state, player_index
- * Side Effect: player position
- * Description: updates the location of the player after rolling dice
- * Return: void
+ * Parameters: 
+ *   GameState *game_state - Pointer to the game state structure.
+ *   int player_index - Index of the player to move (0-based).
+ * Side Effect: 
+ *   - Updates the player's position based on the dice roll.
+ *   - Handles snakes and ladders to adjust the position.
+ *   - Moves the player's pawn widget to the new position on the board.
+ *   - Displays debug logs for dice rolls and movement.
+ * Description: Moves a player's pawn based on dice rolls, applying snakes and ladders rules, 
+ *              and updates the game board visually and logically.
+ * Return: None.
  */
 static void move_player(GameState *game_state, int player_index)
 {
