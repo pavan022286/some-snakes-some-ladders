@@ -14,23 +14,31 @@
 
 /* Main window style */
 window {
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     border-radius: 15px; /* Rounded corners */
-    border: 1px solid #cccccc;
+    border: 2px solid #00838f;
+    padding: 20px;
+}
+
+/* Grid container style */
+.grid-container {
+    padding: 20px;
 }
 
 /* Button styles */
 button {
-    background-color: #4CAF50;
+    background-color: #00796b;
     color: white;
     border-radius: 5px;
     padding: 10px 20px;
     font-size: 16px;
+    border: none;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #004d40;
 }
 
 /* ComboBox styles */
@@ -42,12 +50,13 @@ combobox {
 }
 
 /* ComboBox text color */
-combobox entry {
+.combo-box-entry {
     color: black;
 }
 
 /* Label styles */
 label {
-    font-size: 14px;
-    color: #333;
+    font-size: 16px;
+    color: #004d40;
+    font-weight: bold;
 }

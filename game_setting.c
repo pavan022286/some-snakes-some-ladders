@@ -20,16 +20,6 @@ static GtkWidget *color_combos[MAX_PLAYERS];
 static GtkWidget *color_labels[MAX_PLAYERS];
 
 // Function to load CSS
-/* load_css
- * Atharva Kulkarni, 400533314, 2024-12-05
- *
- * Parameters: None.
- * Side Effect: 
- *   - Loads and applies CSS styles from the "style.css" file.
- *   - Adds the CSS provider to the GTK display.
- * Description: Loads and applies CSS styles to the GTK application.
- * Return: None.
- */
 static void load_css(void)
 {
     GtkCssProvider *provider = gtk_css_provider_new();
@@ -43,163 +33,124 @@ static void load_css(void)
     g_object_unref(provider);
 }
 
+// Function to apply CSS
+static void apply_css(GtkWidget *widget, const char *css)
+{
+    GtkCssProvider *provider = gtk_css_provider_new();
+    gtk_css_provider_load_from_data(provider, css, -1);
+    GtkStyleContext *context = gtk_widget_get_style_context(widget);
+    gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+    g_object_unref(provider);
+}
+
 // Launch the settings window
-/* launch_game_settings
- *
- * Parameters: 
- *   GtkApplication *app - The GTK application instance.
- *   gpointer user_data - Pointer to the GameState structure.
- * Side Effect: 
- *   - Creates and displays a settings window with UI components for player count and color selection.
- *   - Updates the GameState structure with the application instance.
- *   - Connects signals for player count changes, help button, and start game functionality.
- * Description: Initializes and displays the game settings screen, allowing users to select the number of players,
- *              assign colors, and proceed to the game board.
- * Return: None.
- */
 void launch_game_settings(GtkApplication *app, gpointer user_data)
 {
     GameState *game_state = (GameState *)user_data;
     game_state->app = app;
 
-    g_print("Debug: launch_game_settings called.\n");
-
-    // Load CSS
-    load_css();
-
     GtkWidget *window = gtk_application_window_new(app);
-    g_print("Debug: Window created: %p\n", window);
-
     gtk_window_set_title(GTK_WINDOW(window), "Game Settings");
-    gtk_window_set_default_size(GTK_WINDOW(window), 400, 300);
 
     GtkWidget *grid = gtk_grid_new();
-    gtk_grid_set_row_homogeneous(GTK_GRID(grid), TRUE);
-    gtk_grid_set_column_homogeneous(GTK_GRID(grid), TRUE);
-    game_state->grid = grid; // Assign the grid to game_state
-
-    GtkWidget *label = gtk_label_new("Number of players:");
-    gtk_grid_attach(GTK_GRID(grid), label, 0, 0, 1, 1);
-
-    GtkWidget *combo_box = gtk_combo_box_text_new();
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box), "1");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box), "2");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box), "3");
-    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo_box), "4");
-    gtk_grid_attach(GTK_GRID(grid), combo_box, 1, 0, 1, 1);
-
-    // Connect the combo box to a callback function to update the number of players
-    g_signal_connect(combo_box, "changed", G_CALLBACK(on_num_players_changed), game_state);
-
-    // Add "Start Game" button
-    GtkWidget *start_button = gtk_button_new_with_label("Start Game");
-    g_signal_connect(start_button, "clicked", G_CALLBACK(on_settings_confirmed), game_state);
-    gtk_grid_attach(GTK_GRID(grid), start_button, 0, MAX_PLAYERS + 2, 1, 1);
-
-    // Add "Help" button
-    GtkWidget *help_button = gtk_button_new_with_label("Help");
-    g_signal_connect(help_button, "clicked", G_CALLBACK(on_help_button_clicked), NULL);
-    gtk_grid_attach(GTK_GRID(grid), help_button, 1, MAX_PLAYERS + 2, 1, 1);
-
+    gtk_grid_set_row_spacing(GTK_GRID(grid), 10);
+    gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
+    gtk_widget_set_margin_start(grid, 30);
+    gtk_widget_set_margin_end(grid, 30);
+    gtk_widget_set_margin_top(grid, 30);
+    gtk_widget_set_margin_bottom(grid, 30);
     gtk_window_set_child(GTK_WINDOW(window), grid);
-    gtk_widget_show(window);
-}
 
-// Callback function to update the number of players
-/* on_num_players_changed
- * Atharva Kulkarni, 400533314, 2024-12-05
- *
- * Parameters: 
- *   GtkComboBoxText *combo_box - The combo box widget for number of players selection.
- *   gpointer user_data - Pointer to the GameState structure.
- * Side Effect: 
- *   - Updates the number of players in the game state.
- *   - Adds or removes color selection widgets based on the selected number of players.
- * Description: Callback function to update the number of players when the combo box value changes.
- * Return: None.
- */
-void on_num_players_changed(GtkComboBoxText *combo_box, gpointer user_data)
-{
-    GameState *game_state = (GameState *)user_data;
-    const char *num_players_text = gtk_combo_box_text_get_active_text(combo_box);
-    int num_players = atoi(num_players_text);
+    GtkWidget *num_players_label = gtk_label_new("Number of Players:");
+    gtk_grid_attach(GTK_GRID(grid), num_players_label, 0, 0, 1, 1);
 
-    // Remove existing color selection widgets if any
-    for (int i = 0; i < MAX_PLAYERS; i++)
-    {
-        if (color_labels[i])
-        {
-            gtk_widget_unparent(color_labels[i]);
-            color_labels[i] = NULL;
-        }
-        if (color_combos[i])
-        {
-            gtk_widget_unparent(color_combos[i]);
-            color_combos[i] = NULL;
-        }
-    }
+    GtkWidget *num_players_combo = gtk_combo_box_text_new();
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(num_players_combo), "1");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(num_players_combo), "2");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(num_players_combo), "3");
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(num_players_combo), "4");
+    gtk_grid_attach(GTK_GRID(grid), num_players_combo, 1, 0, 1, 1);
+    g_signal_connect(num_players_combo, "changed", G_CALLBACK(on_num_players_changed), game_state);
 
-    // Add color selection combo boxes for the selected number of players
-    for (int i = 0; i < num_players; i++)
-    {
-        color_labels[i] = gtk_label_new(g_strdup_printf("Player %d Color:", i + 1));
-        gtk_grid_attach(GTK_GRID(game_state->grid), color_labels[i], 0, i + 1, 1, 1);
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        color_labels[i] = gtk_label_new(NULL);
+        gtk_grid_attach(GTK_GRID(grid), color_labels[i], 0, i + 1, 1, 1);
 
         color_combos[i] = gtk_combo_box_text_new();
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(color_combos[i]), "Red");
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(color_combos[i]), "Blue");
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(color_combos[i]), "Green");
         gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(color_combos[i]), "Yellow");
-        gtk_grid_attach(GTK_GRID(game_state->grid), color_combos[i], 1, i + 1, 1, 1);
-
-        // Connect the combo box to a callback function to update the player's color
+        gtk_grid_attach(GTK_GRID(grid), color_combos[i], 1, i + 1, 1, 1);
         g_signal_connect(color_combos[i], "changed", G_CALLBACK(on_color_combo_box_changed), &game_state->players[i]);
+
+        // Hide color options initially
+        gtk_widget_hide(color_labels[i]);
+        gtk_widget_hide(color_combos[i]);
+
+        // Set the text color to black using CSS class
+        GtkWidget *entry = gtk_widget_get_first_child(GTK_WIDGET(color_combos[i]));
+        if (GTK_IS_ENTRY(entry)) {
+            gtk_widget_add_css_class(entry, "combo-box-entry");
+        }
     }
 
-    gtk_widget_show(GTK_WIDGET(game_state->grid));
+    GtkWidget *start_button = gtk_button_new_with_label("Start Game");
+    gtk_grid_attach(GTK_GRID(grid), start_button, 0, MAX_PLAYERS + 1, 2, 1);
+    g_signal_connect(start_button, "clicked", G_CALLBACK(on_settings_confirmed), game_state);
+
+    GtkWidget *help_button = gtk_button_new_with_label("Help");
+    gtk_grid_attach(GTK_GRID(grid), help_button, 0, MAX_PLAYERS + 2, 2, 1);
+    g_signal_connect(help_button, "clicked", G_CALLBACK(on_help_button_clicked), NULL);
+
+    gtk_widget_show(window);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE); // Make window non-resizable
+    gtk_window_set_default_size(GTK_WINDOW(window), -1, -1); // Adjust window size to fit content
+}
+
+// Callback function to update the number of players
+void on_num_players_changed(GtkComboBoxText *combo_box, gpointer user_data)
+{
+    GameState *game_state = (GameState *)user_data;
+    const gchar *num_players_str = gtk_combo_box_text_get_active_text(combo_box);
+    int num_players = atoi(num_players_str);
+
+    game_state->num_players = num_players;
+
+    for (int i = 0; i < MAX_PLAYERS; i++) {
+        if (i < num_players) {
+            gtk_widget_show(color_labels[i]);
+            gtk_widget_show(color_combos[i]);
+        } else {
+            gtk_widget_hide(color_labels[i]);
+            gtk_widget_hide(color_combos[i]);
+        }
+    }
+
+    // Adjust window size to fit content
+    GtkWidget *window = gtk_widget_get_ancestor(GTK_WIDGET(combo_box), GTK_TYPE_WINDOW);
+    gtk_window_set_default_size(GTK_WINDOW(window), -1, -1);
 }
 
 // Callback function to update player's color
-/* on_color_combo_box_changed
- * Atharva Kulkarni, 400533314, 2024-12-05
- *
- * Parameters: 
- *   GtkComboBoxText *combo_box - The combo box widget for color selection.
- *   gpointer user_data - Pointer to the Player structure.
- * Side Effect: 
- *   - Updates the player's color based on the selected value.
- *   - Logs debug information about the selected color.
- * Description: Callback function to update the player's color when the combo box value changes.
- * Return: None.
- */
 void on_color_combo_box_changed(GtkComboBoxText *combo_box, gpointer user_data)
 {
-    Player *player = (Player *)user_data;
-    const char *color = gtk_combo_box_text_get_active_text(combo_box);
-    if (color)
-    {
-        strncpy(player->color, color, sizeof(player->color) - 1);
-        player->color[sizeof(player->color) - 1] = '\0'; // Ensure null-termination
-        g_print("Debug: Player color set to %s\n", player->color);
+    const gchar *color = gtk_combo_box_text_get_active_text(combo_box);
+
+    // Set the text color to black using CSS class
+    GtkWidget *entry = gtk_widget_get_first_child(GTK_WIDGET(combo_box));
+    if (GTK_IS_ENTRY(entry)) {
+        gtk_widget_add_css_class(entry, "combo-box-entry");
     }
+
+    Player *player = (Player *)user_data;
+    strncpy(player->color, color, sizeof(player->color) - 1);
+    player->color[sizeof(player->color) - 1] = '\0';
+
+    g_print("Player color changed to: %s\n", color);
 }
 
 // Callback for "Start Game" button
-/* on_settings_confirmed
- * Atharva Kulkarni, 400533314, 2024-12-05
- *
- * Parameters: 
- *   GtkWidget *widget - The "Start Game" button widget (unused).
- *   gpointer data - Pointer to the GameState structure.
- * Side Effect: 
- *   - Updates player colors and initial positions based on user selection.
- *   - Logs debug information about player color selection.
- *   - Validates color uniqueness across players.
- *   - Calls `launch_game_board` to proceed to the game board screen.
- * Description: Processes player settings (e.g., color selection) and transitions 
- *              to the game board after validation.
- * Return: None.
- */
 static void on_settings_confirmed(GtkWidget *widget, gpointer data)
 {
     GameState *game_state = (GameState *)data;
@@ -213,13 +164,7 @@ static void on_settings_confirmed(GtkWidget *widget, gpointer data)
         if (num_players_text) {
             game_state->num_players = atoi(num_players_text);
             g_print("Debug: Number of players set to %d\n", game_state->num_players);
-        } else {
-            g_print("Error: Failed to get active text from combo box.\n");
-            return;
         }
-    } else {
-        g_print("Error: Failed to get combo box from grid.\n");
-        return;
     }
 
     // Validate player colors
@@ -245,7 +190,6 @@ static void on_settings_confirmed(GtkWidget *widget, gpointer data)
 
         strncpy(game_state->players[i].color, color, sizeof(game_state->players[i].color) - 1);
         game_state->players[i].color[sizeof(game_state->players[i].color) - 1] = '\0';
-        g_print("Debug: Player %d confirmed color: %s\n", i + 1, game_state->players[i].color);
         game_state->players[i].position = 1; // Start at position 1
     }
 
@@ -254,17 +198,6 @@ static void on_settings_confirmed(GtkWidget *widget, gpointer data)
 }
 
 // Callback for "Help" button
-/* on_help_button_clicked
- * Atharva Kulkarni, 400533314, 2024-12-05
- *
- * Parameters: 
- *   GtkWidget *widget - The "Help" button widget (unused).
- *   gpointer data - Unused pointer to user data.
- * Side Effect: 
- *   - Displays help information about the game and its controls.
- * Description: Callback function to display help information when the "Help" button is clicked.
- * Return: None.
- */
 void on_help_button_clicked(GtkWidget *widget, gpointer data)
 {
     puts("Usage: snakesLadders [OPTIONS]");
