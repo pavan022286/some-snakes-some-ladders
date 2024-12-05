@@ -45,7 +45,7 @@ static void load_css(void)
 
 // Function to apply CSS
 /* apply_css
- * Harold Le, 400502557, 2024-12-05
+ * Atharva Kulkarni, 400533314, 2024-12-05
  *
  * Parameters: GtkWidget *widget - The widget to which the CSS will be applied.
  *             const gchar *css_class - The CSS class to apply to the widget.
