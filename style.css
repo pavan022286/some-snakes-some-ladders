@@ -1,0 +1,41 @@
+/* style.css */
+
+/* Main window style */
+window {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    border-radius: 15px; /* Rounded corners */
+    border: 1px solid #cccccc;
+}
+
+/* Button styles */
+button {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* ComboBox styles */
+combobox {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+/* ComboBox text color */
+combobox entry {
+    color: black;
+}
+
+/* Label styles */
+label {
+    font-size: 14px;
+    color: #333;
+}
