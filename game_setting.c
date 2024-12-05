@@ -20,6 +20,16 @@ static GtkWidget *color_combos[MAX_PLAYERS];
 static GtkWidget *color_labels[MAX_PLAYERS];
 
 // Function to load CSS
+/* load_css
+ * Atharva Kulkarni, 400533314, 2024-12-05
+ *
+ * Parameters: None.
+ * Side Effect: 
+ *   - Loads and applies CSS styles from the "style.css" file.
+ *   - Adds the CSS provider to the GTK display.
+ * Description: Loads and applies CSS styles to the GTK application.
+ * Return: None.
+ */
 static void load_css(void)
 {
     GtkCssProvider *provider = gtk_css_provider_new();
@@ -33,6 +43,20 @@ static void load_css(void)
     g_object_unref(provider);
 }
 
+// Launch the settings window
+/* launch_game_settings
+ *
+ * Parameters: 
+ *   GtkApplication *app - The GTK application instance.
+ *   gpointer user_data - Pointer to the GameState structure.
+ * Side Effect: 
+ *   - Creates and displays a settings window with UI components for player count and color selection.
+ *   - Updates the GameState structure with the application instance.
+ *   - Connects signals for player count changes, help button, and start game functionality.
+ * Description: Initializes and displays the game settings screen, allowing users to select the number of players,
+ *              assign colors, and proceed to the game board.
+ * Return: None.
+ */
 void launch_game_settings(GtkApplication *app, gpointer user_data)
 {
     GameState *game_state = (GameState *)user_data;
@@ -82,6 +106,18 @@ void launch_game_settings(GtkApplication *app, gpointer user_data)
 }
 
 // Callback function to update the number of players
+/* on_num_players_changed
+ * Atharva Kulkarni, 400533314, 2024-12-05
+ *
+ * Parameters: 
+ *   GtkComboBoxText *combo_box - The combo box widget for number of players selection.
+ *   gpointer user_data - Pointer to the GameState structure.
+ * Side Effect: 
+ *   - Updates the number of players in the game state.
+ *   - Adds or removes color selection widgets based on the selected number of players.
+ * Description: Callback function to update the number of players when the combo box value changes.
+ * Return: None.
+ */
 void on_num_players_changed(GtkComboBoxText *combo_box, gpointer user_data)
 {
     GameState *game_state = (GameState *)user_data;
@@ -124,6 +160,18 @@ void on_num_players_changed(GtkComboBoxText *combo_box, gpointer user_data)
 }
 
 // Callback function to update player's color
+/* on_color_combo_box_changed
+ * Atharva Kulkarni, 400533314, 2024-12-05
+ *
+ * Parameters: 
+ *   GtkComboBoxText *combo_box - The combo box widget for color selection.
+ *   gpointer user_data - Pointer to the Player structure.
+ * Side Effect: 
+ *   - Updates the player's color based on the selected value.
+ *   - Logs debug information about the selected color.
+ * Description: Callback function to update the player's color when the combo box value changes.
+ * Return: None.
+ */
 void on_color_combo_box_changed(GtkComboBoxText *combo_box, gpointer user_data)
 {
     Player *player = (Player *)user_data;
@@ -137,6 +185,21 @@ void on_color_combo_box_changed(GtkComboBoxText *combo_box, gpointer user_data)
 }
 
 // Callback for "Start Game" button
+/* on_settings_confirmed
+ * Atharva Kulkarni, 400533314, 2024-12-05
+ *
+ * Parameters: 
+ *   GtkWidget *widget - The "Start Game" button widget (unused).
+ *   gpointer data - Pointer to the GameState structure.
+ * Side Effect: 
+ *   - Updates player colors and initial positions based on user selection.
+ *   - Logs debug information about player color selection.
+ *   - Validates color uniqueness across players.
+ *   - Calls `launch_game_board` to proceed to the game board screen.
+ * Description: Processes player settings (e.g., color selection) and transitions 
+ *              to the game board after validation.
+ * Return: None.
+ */
 static void on_settings_confirmed(GtkWidget *widget, gpointer data)
 {
     GameState *game_state = (GameState *)data;
@@ -191,8 +254,28 @@ static void on_settings_confirmed(GtkWidget *widget, gpointer data)
 }
 
 // Callback for "Help" button
+/* on_help_button_clicked
+ * Atharva Kulkarni, 400533314, 2024-12-05
+ *
+ * Parameters: 
+ *   GtkWidget *widget - The "Help" button widget (unused).
+ *   gpointer data - Unused pointer to user data.
+ * Side Effect: 
+ *   - Displays help information about the game and its controls.
+ * Description: Callback function to display help information when the "Help" button is clicked.
+ * Return: None.
+ */
 void on_help_button_clicked(GtkWidget *widget, gpointer data)
 {
-    g_print("Help button clicked. Display help information here.\n");
-    // Implement help dialog or information display here
+    puts("Usage: snakesLadders [OPTIONS]");
+    puts("Launch the Snakes and Ladders game with a GUI built using GTK4.");
+    puts("\nOptions:");
+    puts("  --help            Display this help message and exit");
+    puts("\nControls:");
+    puts("  Use the mouse to select the number of players and assign colors.");
+    puts("  Click the 'Play' button to start the game.");
+    puts("  Press the dice button to roll the dice for your turn.");
+    puts("\nExamples:");
+    puts("  snakesLadders          Launch the game.");
+    puts("  snakesLadders --help   Show this help message.");
 }

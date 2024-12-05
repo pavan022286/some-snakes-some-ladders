@@ -1,4 +1,16 @@
-/* style.css */
+/* style.css
+ * Atharva Kulkarni, 400533314, 2024-12-05
+ *
+ * CSS file that defines the styles for the Snakes and Ladders game.
+ * It includes styles for the main window, buttons, combo boxes, and labels.
+ * This file is loaded and applied to the GTK application to enhance the visual appearance.
+ *
+ * Styles:
+ * - Main window: background color, font family, border radius, and border.
+ * - Buttons: background color, text color, border radius, padding, font size, and hover effect.
+ * - Combo boxes: background color, border, border radius, padding, and text color.
+ * - Labels: font size and text color.
+ */
 
 /* Main window style */
 window {
