@@ -1,4 +1,5 @@
 /* Prashanta Kandel, 400521817, 2024-12-05
+ * Pavan Patel, 400530973, 2024-12-05
  *
  * C Script that implements GTK4 to simulate a
  * Snakes and Ladders Game
@@ -155,6 +156,7 @@ static void on_tile_button_clicked(GtkButton *button, gpointer user_data)
 
 // dice roll segment, function to roll the dice
 /* roll_dice
+ * Pavan Patel, 400530973,2024-12-05
  *
  * Parameters: N/A
  * Side Effect: N/A
@@ -168,6 +170,7 @@ static int roll_dice()
 
 // function to move a player
 //Harold Le, 400502557, 2024-12-05
+//Pavan Patel,400530973,2021-12-05
 /* move_player
  *
  * Parameters: 
@@ -176,6 +179,7 @@ static int roll_dice()
  * Side Effect: 
  *   - Updates the player's position based on the dice roll.
  *   - Handles snakes and ladders to adjust the position.
+ *   - Stops game if any player reaches 100
  *   - Moves the player's pawn widget to the new position on the board.
  *   - Displays debug logs for dice rolls and movement.
  * Description: Moves a player's pawn based on dice rolls, applying snakes and ladders rules, 
@@ -183,8 +187,12 @@ static int roll_dice()
  * Return: None.
  */
 static void move_player(GameState *game_state, int player_index)
-{
+{	
     Player *player = &game_state->players[player_index];
+    //checks if a player has won and stops function from proceeding
+    if (player->position==100) {
+        return;
+    }
     int dice_result = roll_dice();
     g_print("Player %d rolled a %d\n", player_index + 1, dice_result);
 
@@ -276,10 +284,11 @@ static void move_player(GameState *game_state, int player_index)
 
 // callback for the dice roll button
 /* on_dice_roll_clicked
- *
+ * Pavan Patel, 400530973, 2024-12-05
  * Parameters: button pointer, user data
  * Side Effect: N/A
  * Description: calls other functions if the roll button is clicked
+ * - Stops if player wins
  * Return:  void
  */
 // callback for the dice roll buttons
@@ -290,6 +299,12 @@ static void on_dice_roll_clicked(GtkButton *button, gpointer user_data)
     static int current_player = 0;
     move_player(game_state, current_player);
 
+    //checks if player won and returns
+    if (game_state->players[current_player].position == 100) {
+        g_print("Player %d won the game!\n", current_player + 1);
+        return;
+    }
+
     // moves to the next player
     current_player = (current_player + 1) % game_state->num_players;
     g_print("Next turn: Player %d\n", current_player + 1);
@@ -298,6 +313,7 @@ static void on_dice_roll_clicked(GtkButton *button, gpointer user_data)
 // Launch the game board window
 /* launch_game_board
  *
+ * Pavan Patel, 400530973,2024-12-05
  * Parameter: GameSate is pointer to what the game state is currently in
  * This function creates each componenet of the GUI, such as the grid for the board
  * the overlay to draw the snakes and ladders, the pieces on the board, and the
